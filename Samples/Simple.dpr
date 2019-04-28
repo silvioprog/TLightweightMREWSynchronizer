@@ -84,7 +84,6 @@ begin
 {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
-  Randomize;
   RWS := TLightweightMREWSynchronizer.Create(lmpBoth);
   TS := TList<TThreadTest>.Create;
   Resource := TDictionary<string, string>.Create;
