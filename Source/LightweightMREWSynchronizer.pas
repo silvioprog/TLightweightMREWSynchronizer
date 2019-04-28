@@ -3,7 +3,7 @@
   protected memory simultaneously, while ensuring that any thread writing to
   the memory has exclusive access.
 
-  Adapted from JEDI project.
+  Adapted from JCL by silvioprog.
 }
 
 unit LightweightMREWSynchronizer;
@@ -60,8 +60,8 @@ type
     constructor Create; overload; virtual;
     destructor Destroy; override;
     procedure BeginRead; virtual;
-    procedure BeginWrite; virtual;
     procedure EndRead; virtual;
+    function BeginWrite: Boolean; virtual;
     procedure EndWrite; virtual;
   end;
 
@@ -265,16 +265,16 @@ begin
   EndRW;
 end;
 
-procedure TLightweightMREWSynchronizer.BeginWrite;
+function TLightweightMREWSynchronizer.BeginWrite: Boolean;
 var
   T: TThreadID;
   I: Integer;
   W: Boolean;
 begin
   W := False;
+  T := TThread.Current.ThreadID;
   FCS.Acquire;
   try
-    T := TThread.Current.ThreadID;
     I := IndexByID(T);
     if I < 0 then
     begin
@@ -303,6 +303,7 @@ begin
       end
       else
         Inc(FItems[I].RWCount);
+    Result := True;
   finally
     FCS.Release;
   end;
